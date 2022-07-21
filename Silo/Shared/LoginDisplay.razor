@@ -1,0 +1,47 @@
+﻿@using Microsoft.Identity.Web
+@using Microsoft.Extensions.Options
+@inject IOptionsMonitor<MicrosoftIdentityOptions> microsoftIdentityOptions
+
+<AuthorizeView>
+    <Authorized>
+        <MudMenu Dense=true AnchorOrigin="Origin.BottomLeft"
+            TransformOrigin="Origin.BottomCenter"
+            Size="Size.Large" LockScroll=true Class="rounded-pill ml-2">
+            <ActivatorContent>
+                <MudAvatar Color="Color.Secondary" Variant="Variant.Filled">
+                    @(context.User?.Identity?.Name?.ToUpper()?[0])
+                </MudAvatar>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Disabled=true>
+                    <b style="color: var(--mud-palette-secondary)">@(context.User?.Identity?.Name)</b>
+                </MudMenuItem>
+                @if (_canEditProfile)
+                {
+                    <MudMenuItem Href="MicrosoftIdentity/Account/EditProfile">
+                        Profile
+                    </MudMenuItem>
+                }
+                <MudMenuItem Href="MicrosoftIdentity/Account/SignOut" ForceLoad=true>
+                    Log Out
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+    </Authorized>
+    <NotAuthorized>
+        <MudIconButton Icon="@Icons.Filled.Login"
+            Color="Color.Inherit" Size="Size.Large"
+            Href="MicrosoftIdentity/Account/SignIn" DisableElevation=true
+            Title="Login" Class="rounded-pill" />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool _canEditProfile;
+
+    protected override void OnInitialized()
+    {
+        var options = microsoftIdentityOptions.CurrentValue;
+        _canEditProfile = !string.IsNullOrEmpty(options.EditProfilePolicyId);
+    }
+}

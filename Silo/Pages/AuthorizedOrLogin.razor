@@ -1,0 +1,20 @@
+﻿<AuthorizeView>
+    <Authorized>
+        @ChildContent
+    </Authorized>
+    <NotAuthorized>
+        <MudText Typo="Typo.body1">
+            You're not logged in. To view this page, log in.
+        </MudText>
+        <MudButton EndIcon="@Icons.Filled.Login"
+            Color="Color.Primary" 
+            Href="Identity/Account/Login">
+            Log In
+        </MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+}

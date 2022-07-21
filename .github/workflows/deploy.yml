@@ -1,0 +1,79 @@
+name: Deploy to Azure Container App
+
+on:
+  push:
+    branches:
+    - main
+
+env:
+  UNIQUE_APP_NAME: orleanscart
+  SILO_IMAGE_NAME: orleanscart-silo
+  AZURE_RESOURCE_GROUP_NAME: orleans-resourcegroup
+  AZURE_RESOURCE_GROUP_LOCATION: eastus
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
+    - name: .NET publish shopping cart app
+      run: dotnet publish ./Silo/Orleans.ShoppingCart.Silo.csproj --configuration Release
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Flex bicep
+      run: |
+        az deployment group create \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
+          --template-file '.github/workflows/flex/main.bicep' \
+          --parameters location=${{ env.AZURE_RESOURCE_GROUP_LOCATION }} \
+            appName=${{ env.UNIQUE_APP_NAME }} \
+          --debug
+
+    - name: Get ACR Login Server
+      run: |
+        ACR_LOGIN_SERVER=$(az deployment group show -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -n main --query properties.outputs.acrLoginServer.value | tr -d '"')
+        echo "ACR_LOGIN_SERVER=$ACR_LOGIN_SERVER" >> $GITHUB_ENV
+
+    - name: Prepare Docker buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to ACR
+      run: |
+        access_token=$(az account get-access-token --query accessToken -o tsv)
+        refresh_token=$(curl https://${{ env.ACR_LOGIN_SERVER }}/oauth2/exchange -v -d "grant_type=access_token&service=${{ env.ACR_LOGIN_SERVER }}&access_token=$access_token" | jq -r .refresh_token)
+        # The null GUID 0000... tells the container registry that this is an ACR refresh token during the login flow
+        docker login -u 00000000-0000-0000-0000-000000000000 --password-stdin ${{ env.ACR_LOGIN_SERVER }} <<< "$refresh_token"
+
+    - name: Build and push Silo image to registry
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.SILO_IMAGE_NAME }}:${{ github.sha }}
+        file: Silo/Dockerfile
+
+    - name: Installing Container Apps extension
+      uses: azure/cli@v1
+      with:
+        inlineScript: |
+          az config set extension.use_dynamic_install=yes_without_prompt
+          az extension add --name containerapp --yes
+
+    - name: Deploy Silo
+      uses: azure/cli@v1
+      with:
+        inlineScript: |
+          az containerapp registry set -n ${{ env.UNIQUE_APP_NAME }} -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} --server ${{ env.ACR_LOGIN_SERVER }}
+          az containerapp update -n ${{ env.UNIQUE_APP_NAME }} -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -i ${{ env.ACR_LOGIN_SERVER }}/${{ env.SILO_IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Logout of Azure
+      run: az logout

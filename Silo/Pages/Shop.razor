@@ -1,0 +1,8 @@
+@page "/shop"
+
+<AuthorizedOrLogin>
+    <PurchasableProductTable Title="Shop Inventory"
+        Products=@_products 
+        IsInCart=@IsProductAlreadyInCart
+        OnAddedToCart=@OnAddedToCart />
+</AuthorizedOrLogin>
