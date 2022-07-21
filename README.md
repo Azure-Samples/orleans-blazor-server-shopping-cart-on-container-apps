@@ -1,6 +1,6 @@
-# Microsoft Orleans: Shopping Cart App
+# Microsoft Orleans: Shopping Cart Apps
 
-[![Deploy to Azure Container App](https://github.com/IEvangelist/orleans-on-container-apps/actions/workflows/deploy.yml/badge.svg)](https://github.com/IEvangelist/orleans-on-container-apps/actions/workflows/deploy.yml)
+[![Deploy to Azure Container Apps](https://github.com/Azure-Samples/orleans-blazor-server-shopping-cart-on-container-apps/actions/workflows/deploy.yml/badge.svg)](https://github.com/Azure-Samples/orleans-blazor-server-shopping-cart-on-container-apps/actions/workflows/deploy.yml)
 
 A canonical shopping cart sample application, built using Microsoft Orleans. This app shows the following features:
 
