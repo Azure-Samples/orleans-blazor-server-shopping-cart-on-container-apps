@@ -22,7 +22,7 @@ A canonical shopping cart sample application, built using Microsoft Orleans. Thi
 - [Orleans: Code generation](https://docs.microsoft.com/dotnet/orleans/grains/code-generation)
 - [Orleans: Startup tasks](https://docs.microsoft.com/dotnet/orleans/host/configuration-guide/startup-tasks)
 - [Azure Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep)
-- [Azure Container App](https://docs.microsoft.com/azure/container-apps/overview)
+- [Azure Container Apps](https://docs.microsoft.com/azure/container-apps/overview)
 - [GitHub Actions and .NET](https://docs.microsoft.com/dotnet/devops/github-actions-overview)
 
 The app is architected as follows:
@@ -41,8 +41,8 @@ The app is architected as follows:
 
 ### Quickstart
 
-1. `git clone https://github.com/Azure-Samples/Orleans-Cluster-on-Azure-App-Service.git orleans-on-app-service`
-2. `cd orleans-on-app-service`
+1. `git clone https://github.com/Azure-Samples/orleans-blazor-server-shopping-cart-on-container-apps.git orleans-on-app-service`
+2. `cd orleans-blazor-server-shopping-cart-on-container-apps`
 3. `dotnet run --project Silo\Orleans.ShoppingCart.Silo.csproj`
 
 ### Acknowledgements
