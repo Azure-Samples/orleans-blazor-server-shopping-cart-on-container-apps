@@ -37,7 +37,7 @@ jobs:
           --template-file '.github/workflows/flex/main.bicep' \
           --parameters location=${{ env.AZURE_RESOURCE_GROUP_LOCATION }} \
             appName=${{ env.UNIQUE_APP_NAME }} \
-          --debug --no-wait
+          --debug
 
     - name: Get ACR Login Server
       run: |
