@@ -53,4 +53,4 @@ The Orleans.ShoppingCart.Sile project uses the following open3rd party-source pr
 - [Bogus](https://github.com/bchavez/Bogus): A simple fake data generator for C#, F#, and VB.NET.
 - [Blazorators](https://github.com/IEvangelist/blazorators): Source-generated packages for Blazor JavaScript interop.
 
-Derived from [IEvangelist/orleans-shopping-cart](https://github.com/IEvangelist/orleans-shopping-cart).
+Derived from [IEvangelist/orleans-on-container-apps](https://github.com/IEvangelist/orleans-on-container-apps).
