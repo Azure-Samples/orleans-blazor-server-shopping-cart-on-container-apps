@@ -72,8 +72,7 @@ jobs:
       uses: azure/cli@v1
       with:
         inlineScript: |
-          az containerapp registry set -n ${{ env.UNIQUE_APP_NAME }} -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} --server ${{ env.ACR_LOGIN_SERVER }}
-          az containerapp update -n ${{ env.UNIQUE_APP_NAME }} -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -i ${{ env.ACR_LOGIN_SERVER }}/${{ env.SILO_IMAGE_NAME }}:${{ github.sha }}
+          az containerapp up -n ${{ env.UNIQUE_APP_NAME }} -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -i ${{ env.ACR_LOGIN_SERVER }}/${{ env.SILO_IMAGE_NAME }}:${{ github.sha }}
 
     - name: Logout of Azure
       run: az logout
