@@ -29,19 +29,19 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
-    - name: Flex bicep
+
+    - name: Flex acr bicep
       run: |
         az deployment group create \
           --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
-          --template-file '.github/workflows/flex/main.bicep' \
-          --parameters location=${{ env.AZURE_RESOURCE_GROUP_LOCATION }} \
-            appName=${{ env.UNIQUE_APP_NAME }} \
-          --debug
+          --template-file '.github/workflows/flex/acr.bicep' \
+          --parameters location=${{ env.AZURE_RESOURCE_GROUP_LOCATION }}
 
     - name: Get ACR Login Server
       run: |
-        ACR_LOGIN_SERVER=$(az deployment group show -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -n main --query properties.outputs.acrLoginServer.value | tr -d '"')
+        ACR_NAME=$(az deployment group show -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -n acr --query properties.outputs.acrName.value | tr -d '"')
+        echo "ACR_NAME=$ACR_NAME" >> $GITHUB_ENV
+        ACR_LOGIN_SERVER=$(az deployment group show -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -n acr --query properties.outputs.acrLoginServer.value | tr -d '"')
         echo "ACR_LOGIN_SERVER=$ACR_LOGIN_SERVER" >> $GITHUB_ENV
 
     - name: Prepare Docker buildx
@@ -61,18 +61,21 @@ jobs:
         tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.SILO_IMAGE_NAME }}:${{ github.sha }}
         file: Silo/Dockerfile
 
-    - name: Installing Container Apps extension
-      uses: azure/cli@v1
-      with:
-        inlineScript: |
-          az config set extension.use_dynamic_install=yes_without_prompt
-          az extension add --name containerapp --yes
+    - name: Flex containerapp bicep
+      run: |
+        az deployment group create \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
+          --template-file '.github/workflows/flex/main.bicep' \
+          --parameters location=${{ env.AZURE_RESOURCE_GROUP_LOCATION }} \
+            appName=${{ env.UNIQUE_APP_NAME }} \
+            acrName=${{ env.ACR_NAME }} \
+            repositoryImage=${{ env.ACR_LOGIN_SERVER }}/${{ env.SILO_IMAGE_NAME }}:${{ github.sha }} \
+          --debug
 
-    - name: Deploy Silo
-      uses: azure/cli@v1
-      with:
-        inlineScript: |
-          az containerapp up -n ${{ env.UNIQUE_APP_NAME }} -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -i ${{ env.ACR_LOGIN_SERVER }}/${{ env.SILO_IMAGE_NAME }}:${{ github.sha }}
+    - name: Get Container App URL
+      run: |
+        ACA_URL=$(az deployment group show -g ${{ env.AZURE_RESOURCE_GROUP_NAME }} -n main --query properties.outputs.acaUrl.value | tr -d '"')
+        echo $ACA_URL
 
     - name: Logout of Azure
       run: az logout
