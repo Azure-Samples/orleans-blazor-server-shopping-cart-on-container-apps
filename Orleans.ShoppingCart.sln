@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		.github\workflows\flex\acr.bicep = .github\workflows\flex\acr.bicep
 		.github\workflows\flex\container-app.bicep = .github\workflows\flex\container-app.bicep
 		.github\workflows\deploy.yml = .github\workflows\deploy.yml
 		.github\workflows\flex\environment.bicep = .github\workflows\flex\environment.bicep

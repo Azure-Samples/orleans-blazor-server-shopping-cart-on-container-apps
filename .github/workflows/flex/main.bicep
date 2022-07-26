@@ -16,6 +16,14 @@ module env 'environment.bicep' = {
   }
 }
 
+module storageModule 'storage.bicep' = {
+  name: 'orleansStorageModule'
+  params: {
+    name: '${appName}storage'
+    location: location
+  }
+}
+
 var envVars = [
   {
     name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
@@ -34,14 +42,6 @@ var envVars = [
     value: 'true'
   }
 ]
-
-module storageModule 'storage.bicep' = {
-  name: 'orleansStorageModule'
-  params: {
-    name: '${appName}storage'
-    location: location
-  }
-}
 
 module siloModule 'container-app.bicep' = {
   name: 'orleansSiloModule'
