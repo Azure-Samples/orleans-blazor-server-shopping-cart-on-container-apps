@@ -30,7 +30,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Flex acr bicep
+    - name: Flex ACR bicep
       run: |
         az deployment group create \
           --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
@@ -61,7 +61,7 @@ jobs:
         tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.SILO_IMAGE_NAME }}:${{ github.sha }}
         file: Silo/Dockerfile
 
-    - name: Flex containerapp bicep
+    - name: Flex ACA bicep
       run: |
         az deployment group create \
           --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
