@@ -37,7 +37,7 @@ The app is architected as follows:
 - The [.NET 6 SDK or later](https://dotnet.microsoft.com/download/dotnet)
 - The [Azure CLI](/cli/azure/install-azure-cli)
 - A .NET integrated development environment (IDE)
-  - Feel free to use the [Visual Studio IDE](https://visualstudio.microsoft.com) or the [Visual Studio Code](https://code.visualstudio.com)
+  - Feel free to use the [Visual Studio](https://visualstudio.microsoft.com) or the [Visual Studio Code](https://code.visualstudio.com)
 
 ### Quickstart
 
