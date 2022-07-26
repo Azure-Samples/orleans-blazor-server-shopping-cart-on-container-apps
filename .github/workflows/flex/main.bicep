@@ -1,15 +1,10 @@
 param appName string
+param acrName string
+param repositoryImage string
 param location string = resourceGroup().location
 
-resource acr 'Microsoft.ContainerRegistry/registries@2021-09-01' = {
-  name: toLower('${uniqueString(resourceGroup().id)}acr')
-  location: location
-  sku: {
-    name: 'Basic'
-  }
-  properties: {
-    adminUserEnabled: true
-  }
+resource acr 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
+  name: acrName
 }
 
 module env 'environment.bicep' = {
@@ -54,11 +49,12 @@ module siloModule 'container-app.bicep' = {
     appName: appName
     location: location
     containerAppEnvironmentId: env.outputs.id
-    registry: acr.name
+    repositoryImage: repositoryImage
+    registry: acr.properties.loginServer
     registryPassword: acr.listCredentials().passwords[0].value
     registryUsername: acr.listCredentials().username
     envVars: envVars
   }
 }
 
-output acrLoginServer string = acr.properties.loginServer
+output acaUrl string = siloModule.outputs.acaUrl

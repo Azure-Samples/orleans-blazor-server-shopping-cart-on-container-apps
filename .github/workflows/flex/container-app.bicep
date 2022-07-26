@@ -34,6 +34,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       }
     }
     template: {
+      revisionSuffix: uniqueString(repositoryImage, appName)
       containers: [
         {
           image: repositoryImage
@@ -48,3 +49,5 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     }
   }
 }
+
+output acaUrl string = containerApp.properties.configuration.ingress.fqdn
